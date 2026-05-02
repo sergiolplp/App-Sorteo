@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App-Sorteos PRO</title>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: radial-gradient(circle, #1a1a1a, #000);
+  color: white;
+  text-align: center;
+}
+
+h1 { color: #00eaff; text-shadow: 0 0 10px #00eaff; }
+h2 { margin-top: 5px; }
+
+.container { padding: 20px; }
+
+button {
+  padding: 12px 20px;
+  margin: 8px;
+  border: none;
+  border-radius: 12px;
+  background: #00eaff;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover { transform: scale(1.05); }
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  font-size: 18px;
+}
+
+.hidden { display: none; }
+
+.banner {
+  font-size: 24px;
+  margin-top: 20px;
+  color: #ff00c8;
+  text-shadow: 0 0 10px #ff00c8;
+}
+
+/* SLOT */
+.slot-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px;
+}
+
+.slot {
+  width: 90px;
+  height: 100px;
+  background: #111;
+  border-radius: 15px;
+  font-size: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px #00eaff inset;
+}
+
+.spin {
+  animation: spin 0.6s linear;
+}
+
+@keyframes spin {
+  0% { transform: translateY(-100px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+#musicBtn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  background: none;
+  color: white;
+}
+
+/* STATS */
+.stats {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.resultado {
+  font-size: 28px;
+  margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<button id="musicBtn">🔇</button>
+<audio id="music" loop src="quinelasolicaria.mp3"></audio>
+
+<!-- HOME -->
+<div id="home" class="container">
+  <h1>FM Cielo 105.5</h1>
+  <h2>Todo no se puede</h2>
+  <button onclick="irCarga()">Nuevo sorteo</button>
+  <div class="banner">¡Subila Nacho!</div>
+</div>
+
+<!-- CARGA -->
+<div id="carga" class="container hidden">
+  <h2>Carga de participantes</h2>
+
+  <input type="file" id="fileInput"><br><br>
+
+  <input id="numeroInput" maxlength="3" placeholder="000">
+  <button onclick="agregarNumero()">Agregar</button>
+
+  <div class="stats">
+    <p id="contador"></p>
+    <p id="porcentaje"></p>
+    <p id="duplicados"></p>
+  </div>
+
+  <button onclick="finalizar()">Finalizar sorteo</button>
+</div>
+
+<!-- SORTEO -->
+<div id="sorteo" class="container hidden">
+  <h2>Sorteo en vivo</h2>
+
+  <div id="info"></div>
+
+  <div class="slot-container">
+    <div class="slot" id="s0">?</div>
+    <div class="slot" id="s1">?</div>
+    <div class="slot" id="s2">?</div>
+  </div>
+
+  <button onclick="tirar(0)">Centena</button>
+  <button onclick="tirar(1)">Decena</button>
+  <button onclick="tirar(2)">Unidad</button>
+
+  <p id="posibles"></p>
+  <div id="resultado" class="resultado"></div>
+
+  <button onclick="volver()">Volver al inicio</button>
+</div>
+
+<script>
+let numeros = [];
+let duplicados = 0;
+let resultado = ["?", "?", "?"];
+
+/* ---------------- MUSICA ---------------- */
+const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
+
+musicBtn.onclick = () => {
+  if (music.paused) {
+    music.play();
+    musicBtn.textContent = "🎵";
+  } else {
+    music.pause();
+    musicBtn.textContent = "🔇";
+  }
+};
+
+/* ---------------- NAV ---------------- */
+function irCarga() {
+  home.classList.add("hidden");
+  carga.classList.remove("hidden");
+}
+
+function finalizar() {
+  if (!numeros.length) {
+    alert("Debe cargar al menos un número");
+    return;
+  }
+
+  if (!confirm("¿Está seguro que desea finalizar la carga?")) return;
+
+  carga.classList.add("hidden");
+  sorteo.classList.remove("hidden");
+
+  let porcentaje = ((numeros.length / 1000) * 100).toFixed(1);
+
+  info.innerHTML = `
+    Participación: ${porcentaje}%<br>
+    Duplicados: ${duplicados}
+  `;
+}
+
+/* ---------------- CARGA ---------------- */
+function agregarNumero() {
+  let n = numeroInput.value;
+
+  if (!/^\d{3}$/.test(n)) {
+    alert("Debe ingresar exactamente 3 números");
+    return;
+  }
+
+  if (numeros.includes(n)) duplicados++;
+
+  numeros.push(n);
+  numeroInput.value = "";
+
+  actualizarStats();
+}
+
+/* ---------------- EXCEL ---------------- */
+fileInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+
+  if (!file.name.toLowerCase().includes("sorteo")) {
+    alert("El archivo debe llamarse 'sorteo.xlsx'");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = evt => {
+    const data = new Uint8Array(evt.target.result);
+    const wb = XLSX.read(data, { type: "array" });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    let errores = 0;
+
+    rows.forEach((r, i) => {
+      let val = r[0];
+
+      if (!/^\d{3}$/.test(val)) {
+        errores++;
+        return;
+      }
+
+      if (numeros.includes(val)) duplicados++;
+
+      numeros.push(val);
+    });
+
+    if (errores) alert("Se omitieron " + errores + " valores inválidos");
+
+    actualizarStats();
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+
+/* ---------------- STATS ---------------- */
+function actualizarStats() {
+  contador.innerText = `Cargados: ${numeros.length}`;
+  porcentaje.innerText = `Progreso: ${((numeros.length/999)*100).toFixed(1)}%`;
+  duplicados.innerText = `Duplicados: ${duplicados}`;
+}
+
+/* ---------------- SORTEO ---------------- */
+function tirar(pos) {
+  let slot = document.getElementById("s" + pos);
+
+  slot.classList.remove("spin");
+  void slot.offsetWidth;
+  slot.classList.add("spin");
+
+  let n = Math.floor(Math.random() * 10);
+
+  setTimeout(() => {
+    slot.textContent = n;
+    resultado[pos] = n;
+
+    validarPosibles(pos);
+
+    if (!resultado.includes("?")) checkGanador();
+  }, 300);
+}
+
+/* ---------------- POSIBLES ---------------- */
+function validarPosibles(pos) {
+  let set = new Set();
+
+  numeros.forEach(n => {
+    if (pos === 1 && n[0] == resultado[0]) set.add(n[1]);
+    if (pos === 2 && n[0] == resultado[0] && n[1] == resultado[1]) set.add(n[2]);
+  });
+
+  if (pos > 0) {
+    posibles.innerText = "Posibles: " + [...set].join(", ");
+  }
+}
+
+/* ---------------- RESULTADO ---------------- */
+function checkGanador() {
+  let num = resultado.join("");
+
+  let ganadores = numeros.filter(n => n === num);
+
+  if (ganadores.length > 0) {
+    resultadoDiv.innerHTML =
+      ganadores.length === 1
+        ? "🎉 Hay 1 ganador 🎉"
+        : `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
+
+    document.body.style.background = "radial-gradient(circle, #003300, #000)";
+  } else {
+    resultadoDiv.innerHTML = "Hoy no hay premio 😢";
+  }
+}
+
+/* FIX ID */
+const resultadoDiv = document.getElementById("resultado");
+
+/* ---------------- RESET ---------------- */
+function volver() {
+  location.reload();
+}
+</script>
+
+</body>
+</html>
