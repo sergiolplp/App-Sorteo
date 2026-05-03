@@ -21,13 +21,10 @@ body {
 }
 
 /* NEON */
-.neon {
-  text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff, 0 0 20px #00eaff;
-}
-
+.neon { text-shadow: 0 0 5px #00eaff,0 0 10px #00eaff,0 0 20px #00eaff; }
 .neon-pink {
   color: #ff00c8;
-  text-shadow: 0 0 5px #ff00c8, 0 0 10px #ff00c8, 0 0 20px #ff00c8;
+  text-shadow: 0 0 5px #ff00c8,0 0 10px #ff00c8,0 0 20px #ff00c8;
 }
 
 /* BOTONES */
@@ -37,25 +34,18 @@ button {
   border: none;
   border-radius: 10px;
   background: #00eaff;
-  color: #ff00c8; /* 👈 TEXTO ROSA NEON */
+  color: #ff00c8;
   font-weight: bold;
-  cursor: pointer;
 }
 
 /* BANNER */
 .banner {
-  margin-top: 20px;
   font-size: 24px;
-  font-weight: bold;
   color: #ff00c8;
   text-shadow: 0 0 15px #ff00c8;
   animation: pulse 1.5s infinite alternate;
 }
-
-@keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
+@keyframes pulse { from{transform:scale(1)} to{transform:scale(1.05)} }
 
 /* SLOT */
 .slot {
@@ -70,43 +60,36 @@ button {
   border-radius: 10px;
   box-shadow: 0 0 10px #00eaff inset;
 }
-
-.spin { animation: spin 0.5s; }
-
+.spin { animation: spin .5s; }
 @keyframes spin {
   from { transform: translateY(-100px); opacity:0; }
   to { transform: translateY(0); opacity:1; }
 }
 
-/* EFECTO GANADOR */
-.win {
-  animation: flash 0.5s alternate infinite;
-}
-
+/* GANADOR */
+.win { animation: flash .5s alternate infinite; }
 @keyframes flash {
-  from { background: #001a00; }
-  to { background: #003300; }
+  from { background:#001a00 }
+  to { background:#003300 }
 }
 
-/* MUSICA */
 #musicBtn {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  font-size: 22px;
-  background: none;
-  color: white;
+  top:10px; right:10px;
+  font-size:22px;
+  background:none;
+  color:white;
 }
 
-.hidden { display: none; }
-.container { padding: 20px; }
+.hidden { display:none; }
+.container { padding:20px; }
 
 input {
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  text-align: center;
-  font-size: 18px;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  text-align:center;
+  font-size:18px;
 }
 </style>
 </head>
@@ -120,9 +103,7 @@ input {
 <div id="home" class="container">
   <h1 class="neon-pink">FM Cielo 105.5</h1>
   <h2 class="neon">Todo no se puede</h2>
-
   <button onclick="irCarga()">Nuevo sorteo</button>
-
   <div class="banner">¡Subila Nacho!</div>
 </div>
 
@@ -161,7 +142,8 @@ input {
   <p id="posibles"></p>
   <h2 id="resultado"></h2>
 
-  <button onclick="volver()">Volver</button>
+  <button onclick="agregarDesdeSorteo()">Agregar un nuevo número</button>
+  <button onclick="volver()">Volver al inicio</button>
 </div>
 
 <script>
@@ -169,190 +151,208 @@ let numeros = [];
 let duplicados = 0;
 let resultado = ["?","?","?"];
 
-/* MUSICA */
-let isPlaying = false;
+/* MUSICA PERSISTENTE */
+let isPlaying = localStorage.getItem("music") === "on";
 const music = document.getElementById("music");
-const musicBtn = document.getElementById("musicBtn");
+const btn = document.getElementById("musicBtn");
 
-musicBtn.onclick = () => {
-  if (!isPlaying) {
-    music.play().catch(()=>{});
-    musicBtn.textContent = "🎵";
-  } else {
-    music.pause();
-    musicBtn.textContent = "🔇";
-  }
+if (isPlaying) {
+  music.play().catch(()=>{});
+  btn.textContent="🎵";
+}
+
+btn.onclick = () => {
   isPlaying = !isPlaying;
+  localStorage.setItem("music", isPlaying ? "on" : "off");
+  if (isPlaying) { music.play().catch(()=>{}); btn.textContent="🎵"; }
+  else { music.pause(); btn.textContent="🔇"; }
 };
 
 /* NAV */
-function irCarga() {
+function irCarga(){
   home.classList.add("hidden");
   carga.classList.remove("hidden");
   numeroInput.focus();
 }
 
-function finalizar() {
-  if (!numeros.length) {
-    alert("Debe cargar números");
+/* FINALIZAR */
+function finalizar(){
+  if(!numeros.length){
+    alert("Debe cargar al menos un número válido.");
     return;
   }
 
-  if (!confirm("¿Finalizar carga?")) return;
+  if(!confirm("¿Está seguro que desea finalizar la carga?")) return;
 
   carga.classList.add("hidden");
   sorteo.classList.remove("hidden");
 
-  info.innerHTML =
-    `Participación: ${(numeros.length/1000*100).toFixed(1)}%<br>
-     Duplicados: ${duplicados}`;
+  info.innerHTML = `
+    Participación: ${(numeros.length/1000*100).toFixed(1)}%<br>
+    Duplicados: ${duplicados}
+  `;
 }
 
 /* INPUT UX */
-numeroInput.addEventListener("input", () => {
-  if (numeroInput.value.length === 3) {
-    btnAgregar.focus();
-  }
+numeroInput.addEventListener("input",()=>{
+  if(numeroInput.value.length===3) btnAgregar.focus();
 });
-
-numeroInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") agregarNumero();
+numeroInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter") agregarNumero();
 });
 
 /* CARGA */
-function agregarNumero() {
+function agregarNumero(){
   let n = numeroInput.value;
 
-  if (!/^\d{3}$/.test(n)) {
-    alert("Debe ser de 3 cifras");
+  if(!/^\d{3}$/.test(n)){
+    alert("El número debe tener exactamente 3 dígitos numéricos.");
     return;
   }
 
-  if (numeros.includes(n)) duplicados++;
+  if(numeros.includes(n)) duplicados++;
 
   numeros.push(n);
-
-  numeroInput.value = "";
+  numeroInput.value="";
   numeroInput.focus();
-
   actualizar();
 }
 
-/* EXCEL */
-fileInput.addEventListener("change", e => {
-  let file = e.target.files[0];
+/* EXCEL VALIDACION FUERTE */
+fileInput.addEventListener("change",e=>{
+  let f = e.target.files[0];
 
-  if (!file.name.toLowerCase().includes("sorteo")) {
-    alert("Nombre incorrecto");
+  if(!f.name.toLowerCase()==="sorteo.xlsx"){
+    alert("El archivo debe llamarse exactamente 'sorteo.xlsx'.");
     return;
   }
 
-  let reader = new FileReader();
+  if(!f.name.endsWith(".xlsx")){
+    alert("El archivo debe ser formato .xlsx.");
+    return;
+  }
 
-  reader.onload = evt => {
-    let wb = XLSX.read(evt.target.result, {type:"array"});
-    let rows = XLSX.utils.sheet_to_json(
-      wb.Sheets[wb.SheetNames[0]], {header:1}
+  let reader=new FileReader();
+  reader.onload=evt=>{
+    let wb=XLSX.read(evt.target.result,{type:"array"});
+    let rows=XLSX.utils.sheet_to_json(
+      wb.Sheets[wb.SheetNames[0]],{header:1}
     );
 
-    rows.forEach(r => {
-      let val = r[0];
-      if (/^\d{3}$/.test(val)) {
-        if (numeros.includes(val)) duplicados++;
-        numeros.push(val);
+    let errores=[];
+
+    rows.forEach((r,i)=>{
+      let val=r[0];
+      if(!/^\d{3}$/.test(val)){
+        errores.push(`Fila ${i+1}: valor inválido (${val})`);
+        return;
       }
+      if(numeros.includes(val)) duplicados++;
+      numeros.push(val);
     });
+
+    if(errores.length){
+      alert("Errores detectados:\n"+errores.slice(0,5).join("\n"));
+    }
 
     actualizar();
   };
-
-  reader.readAsArrayBuffer(file);
+  reader.readAsArrayBuffer(f);
 });
 
 /* STATS */
-function actualizar() {
-  contador.innerText = "Cargados: " + numeros.length;
-  porcentaje.innerText =
-    "Progreso: " + ((numeros.length/999)*100).toFixed(1) + "%";
-  dup.innerText = "Duplicados: " + duplicados;
+function actualizar(){
+  contador.innerText=`${numeros.length} / 999 cargados`;
+  porcentaje.innerText=`${((numeros.length/999)*100).toFixed(1)}%`;
+  dup.innerText=`Duplicados: ${duplicados}`;
 }
 
 /* SORTEO */
-function tirar(pos) {
-  if (resultado[pos] !== "?") return;
+function tirar(pos){
+  if(resultado[pos]!=="?") return;
 
-  let slot = document.getElementById("s"+pos);
+  let slot=document.getElementById("s"+pos);
   slot.classList.add("spin");
 
-  let n = Math.floor(Math.random()*10);
+  let n=Math.floor(Math.random()*10);
 
   setTimeout(()=>{
-    slot.textContent = n;
-    resultado[pos] = n;
-
-    document.getElementById("b"+pos).disabled = true;
+    slot.textContent=n;
+    resultado[pos]=n;
+    document.getElementById("b"+pos).disabled=true;
 
     mostrarPosibles(pos);
 
-    if (!resultado.includes("?")) checkGanador();
+    if(!resultado.includes("?")) checkGanador();
   },300);
 }
 
 /* POSIBLES */
-function mostrarPosibles(pos) {
-  let filtrados = numeros;
+function mostrarPosibles(pos){
+  let filtrados=numeros;
 
-  if (resultado[0] !== "?") {
-    filtrados = filtrados.filter(n => n[0] == resultado[0]);
+  if(resultado[0]!=="?")
+    filtrados=filtrados.filter(n=>n[0]==resultado[0]);
+
+  if(resultado[1]!=="?")
+    filtrados=filtrados.filter(n=>n[1]==resultado[1]);
+
+  let set=new Set();
+
+  if(pos===0){
+    filtrados.forEach(n=>set.add(n[1]));
+    posibles.innerText=set.size
+      ? "Posibles decena: "+[...set].sort().join(", ")
+      : "No hay combinaciones posibles";
   }
 
-  if (resultado[1] !== "?") {
-    filtrados = filtrados.filter(n => n[1] == resultado[1]);
-  }
-
-  let set = new Set();
-
-  if (pos === 0) {
-    filtrados.forEach(n => set.add(n[1]));
-    posibles.innerText = "Posibles decena: " + [...set].sort().join(", ");
-  }
-
-  if (pos === 1) {
-    filtrados.forEach(n => set.add(n[2]));
-    posibles.innerText = "Posibles unidad: " + [...set].sort().join(", ");
+  if(pos===1){
+    filtrados.forEach(n=>set.add(n[2]));
+    posibles.innerText=set.size
+      ? "Posibles unidad: "+[...set].sort().join(", ")
+      : "No hay combinaciones posibles";
   }
 }
 
 /* RESULTADO */
-function checkGanador() {
-  let num = resultado.join("");
-  let ganadores = numeros.filter(n => n === num);
+function checkGanador(){
+  let num=resultado.join("");
+  let ganadores=numeros.filter(n=>n===num);
 
-  if (ganadores.length > 0) {
-    resultado.innerText =
-      ganadores.length === 1
-        ? "🎉 Hay 1 ganador 🎉"
-        : `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
-
+  if(ganadores.length){
+    resultado.innerText=
+      ganadores.length===1
+        ? "🎉 Hay 1 ganador"
+        : `🎉 Tenemos ${ganadores.length} ganadores`;
     document.body.classList.add("win");
-  } else {
-    resultado.innerText = "Hoy no hay premio";
+  }else{
+    resultado.innerText="Hoy no hay premio";
   }
 }
 
-/* RESET */
-function volver() {
-  if (resultado.includes("?")) {
-    alert("Debe terminar el sorteo");
+/* AGREGAR DESDE SORTEO */
+function agregarDesdeSorteo(){
+  let nuevo=prompt("Ingrese número de 3 cifras:");
+  if(!/^\d{3}$/.test(nuevo)){
+    alert("Número inválido.");
     return;
   }
+  if(numeros.includes(nuevo)) duplicados++;
+  numeros.push(nuevo);
+  actualizar();
+}
 
-  document.body.classList.remove("win");
+/* RESET */
+function volver(){
+  if(resultado.includes("?")){
+    alert("Debe completar el sorteo antes de salir.");
+    return;
+  }
   location.reload();
 }
 
 /* PWA */
-if ("serviceWorker" in navigator) {
+if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js");
 }
 </script>
