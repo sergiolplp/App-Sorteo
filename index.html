@@ -22,23 +22,39 @@ body {
 
 /* NEON */
 .neon {
-  text-shadow:
-    0 0 5px #00eaff,
-    0 0 10px #00eaff,
-    0 0 20px #00eaff;
+  text-shadow: 0 0 5px #00eaff, 0 0 10px #00eaff, 0 0 20px #00eaff;
 }
 
-/* SECCIONES */
-.container { padding: 20px; }
-.hidden { display: none; }
+.neon-pink {
+  color: #ff00c8;
+  text-shadow: 0 0 5px #ff00c8, 0 0 10px #ff00c8, 0 0 20px #ff00c8;
+}
 
+/* BOTONES */
 button {
   padding: 12px;
   margin: 6px;
   border: none;
   border-radius: 10px;
   background: #00eaff;
+  color: #ff00c8; /* 👈 TEXTO ROSA NEON */
   font-weight: bold;
+  cursor: pointer;
+}
+
+/* BANNER */
+.banner {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff00c8;
+  text-shadow: 0 0 15px #ff00c8;
+  animation: pulse 1.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
 }
 
 /* SLOT */
@@ -56,9 +72,20 @@ button {
 }
 
 .spin { animation: spin 0.5s; }
+
 @keyframes spin {
   from { transform: translateY(-100px); opacity:0; }
   to { transform: translateY(0); opacity:1; }
+}
+
+/* EFECTO GANADOR */
+.win {
+  animation: flash 0.5s alternate infinite;
+}
+
+@keyframes flash {
+  from { background: #001a00; }
+  to { background: #003300; }
 }
 
 /* MUSICA */
@@ -70,6 +97,17 @@ button {
   background: none;
   color: white;
 }
+
+.hidden { display: none; }
+.container { padding: 20px; }
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+  font-size: 18px;
+}
 </style>
 </head>
 
@@ -80,9 +118,12 @@ button {
 
 <!-- HOME -->
 <div id="home" class="container">
-  <h1>FM Cielo 105.5</h1>
+  <h1 class="neon-pink">FM Cielo 105.5</h1>
   <h2 class="neon">Todo no se puede</h2>
+
   <button onclick="irCarga()">Nuevo sorteo</button>
+
+  <div class="banner">¡Subila Nacho!</div>
 </div>
 
 <!-- CARGA -->
@@ -128,7 +169,7 @@ let numeros = [];
 let duplicados = 0;
 let resultado = ["?","?","?"];
 
-/* ---------------- MUSICA FIX ---------------- */
+/* MUSICA */
 let isPlaying = false;
 const music = document.getElementById("music");
 const musicBtn = document.getElementById("musicBtn");
@@ -144,7 +185,7 @@ musicBtn.onclick = () => {
   isPlaying = !isPlaying;
 };
 
-/* ---------------- NAV ---------------- */
+/* NAV */
 function irCarga() {
   home.classList.add("hidden");
   carga.classList.remove("hidden");
@@ -167,7 +208,7 @@ function finalizar() {
      Duplicados: ${duplicados}`;
 }
 
-/* ---------------- INPUT UX ---------------- */
+/* INPUT UX */
 numeroInput.addEventListener("input", () => {
   if (numeroInput.value.length === 3) {
     btnAgregar.focus();
@@ -178,7 +219,7 @@ numeroInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") agregarNumero();
 });
 
-/* ---------------- CARGA ---------------- */
+/* CARGA */
 function agregarNumero() {
   let n = numeroInput.value;
 
@@ -197,7 +238,7 @@ function agregarNumero() {
   actualizar();
 }
 
-/* ---------------- EXCEL ---------------- */
+/* EXCEL */
 fileInput.addEventListener("change", e => {
   let file = e.target.files[0];
 
@@ -228,7 +269,7 @@ fileInput.addEventListener("change", e => {
   reader.readAsArrayBuffer(file);
 });
 
-/* ---------------- STATS ---------------- */
+/* STATS */
 function actualizar() {
   contador.innerText = "Cargados: " + numeros.length;
   porcentaje.innerText =
@@ -236,7 +277,7 @@ function actualizar() {
   dup.innerText = "Duplicados: " + duplicados;
 }
 
-/* ---------------- SORTEO ---------------- */
+/* SORTEO */
 function tirar(pos) {
   if (resultado[pos] !== "?") return;
 
@@ -257,7 +298,7 @@ function tirar(pos) {
   },300);
 }
 
-/* ---------------- POSIBLES CORREGIDO ---------------- */
+/* POSIBLES */
 function mostrarPosibles(pos) {
   let filtrados = numeros;
 
@@ -282,32 +323,35 @@ function mostrarPosibles(pos) {
   }
 }
 
-/* ---------------- RESULTADO ---------------- */
+/* RESULTADO */
 function checkGanador() {
   let num = resultado.join("");
-
   let ganadores = numeros.filter(n => n === num);
 
-  if (ganadores.length) {
+  if (ganadores.length > 0) {
     resultado.innerText =
       ganadores.length === 1
-        ? "🎉 Hay 1 ganador"
-        : `🎉 ${ganadores.length} ganadores`;
+        ? "🎉 Hay 1 ganador 🎉"
+        : `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
+
+    document.body.classList.add("win");
   } else {
     resultado.innerText = "Hoy no hay premio";
   }
 }
 
-/* ---------------- RESET ---------------- */
+/* RESET */
 function volver() {
   if (resultado.includes("?")) {
     alert("Debe terminar el sorteo");
     return;
   }
+
+  document.body.classList.remove("win");
   location.reload();
 }
 
-/* ---------------- PWA ---------------- */
+/* PWA */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
 }
