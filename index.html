@@ -91,6 +91,33 @@ input {
   text-align:center;
   font-size:18px;
 }
+
+.resultado-box {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  animation: aparecer 0.5s ease;
+}
+
+.ganador {
+  background: rgba(0,255,100,0.2);
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff88;
+}
+
+.sin-ganador {
+  background: rgba(255,0,0,0.2);
+  color: #ff4d4d;
+  text-shadow: 0 0 10px #ff4d4d;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+  
 </style>
 </head>
 
@@ -140,7 +167,9 @@ input {
   <button id="b2" onclick="tirar(2)">Unidad</button>
 
   <p id="posibles"></p>
+  <div id="resultadoBox" class="resultado-box hidden">
   <h2 id="resultado"></h2>
+</div>
 
   <button onclick="agregarDesdeSorteo()">Agregar un nuevo número</button>
   <button onclick="volver()">Volver al inicio</button>
@@ -316,17 +345,29 @@ function mostrarPosibles(pos){
 
 /* RESULTADO */
 function checkGanador(){
-  let num=resultado.join("");
-  let ganadores=numeros.filter(n=>n===num);
+  let num = resultado.join("");
+  let ganadores = numeros.filter(n => n === num);
 
-  if(ganadores.length){
-    resultado.innerText=
-      ganadores.length===1
-        ? "🎉 Hay 1 ganador"
-        : `🎉 Tenemos ${ganadores.length} ganadores`;
+  const box = document.getElementById("resultadoBox");
+  const res = document.getElementById("resultado");
+
+  box.classList.remove("hidden", "ganador", "sin-ganador");
+
+  if(ganadores.length > 0){
+
+    if(ganadores.length === 1){
+      res.innerText = "🎉 Hay 1 ganador 🎉";
+    } else {
+      res.innerText = `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
+    }
+
+    box.classList.add("ganador");
     document.body.classList.add("win");
-  }else{
-    resultado.innerText="Hoy no hay premio";
+
+  } else {
+
+    res.innerText = "Hoy no hay premio";
+    box.classList.add("sin-ganador");
   }
 }
 
