@@ -325,11 +325,15 @@ if (f.name.toLowerCase() !== "sorteo.xlsx") {
     let errores=[];
 
     rows.forEach((r,i)=>{
-      let val=r[0];
-      if(!/^\d{3}$/.test(val)){
-        errores.push(`Fila ${i+1}: valor inválido (${val})`);
-        return;
-      }
+      let val = r[0];
+
+// convertir a string y completar con ceros a la izquierda
+val = String(val).padStart(3, "0");
+
+if(!/^\d{3}$/.test(val)){
+  errores.push(`Fila ${i+1}: valor inválido (${r[0]})`);
+  return;
+}
       if(numeros.includes(val)) duplicados++;
       numeros.push(val);
     });
