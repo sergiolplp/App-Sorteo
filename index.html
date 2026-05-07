@@ -7,6 +7,8 @@
 <title>App Sorteos</title>
 
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="fmcielo.ico" type="image/x-icon">
+<link rel="apple-touch-icon" href="fmcielo.ico">
 <meta name="theme-color" content="#00eaff">
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -154,10 +156,46 @@ input {
   max-height: 300px;
   overflow-y: auto;
 }
+
+.footer {
+  margin-top: 40px;
+  padding: 15px;
+  font-size: 14px;
+  color: #aaa;
+  text-shadow: 0 0 5px #00eaff;
+}
   
 </style>
 </head>
+<div id="ayudaPopup" class="popup hidden">
+  <div class="popup-content">
 
+    <h3 class="neon">Funcionamiento de la App</h3>
+
+    <p>
+      • Los participantes eligen números de 3 cifras.<br><br>
+
+      • Podés cargar números manualmente o mediante Excel.<br><br>
+
+      • El archivo Excel debe llamarse:
+      <b>sorteo.xlsx</b><br><br>
+
+      • Los números deben estar en la columna A.<br><br>
+
+      • Ejemplos válidos:
+      001, 123, 045, 999<br><br>
+
+      • El sistema sortea:
+      centena, decena y unidad por separado.<br><br>
+
+      • Si el número sorteado coincide con uno cargado:
+      hay ganador.
+    </p>
+
+    <button onclick="cerrarAyuda()">Cerrar</button>
+
+  </div>
+</div>
 <body>
 
 <button id="musicBtn">🔇</button>
@@ -168,6 +206,7 @@ input {
   <h1 class="neon-pink">FM Cielo 105.5</h1>
   <h2 class="neon">Todo no se puede</h2>
   <button onclick="irCarga()">Nuevo sorteo</button>
+  <button onclick="abrirAyuda()">¿Cómo funciona?</button>
   <div class="banner">¡Subila Nacho!</div>
 </div>
 
@@ -228,6 +267,9 @@ input {
   </div>
 </div>
 
+  <footer class="footer">
+  Desarrollado por Serch + IA para Todo no se puede
+</footer>
 
 <script>
 let numeros = [];
@@ -479,7 +521,19 @@ function abrirPopup() {
 function cerrarPopup() {
   document.getElementById("popup").classList.add("hidden");
 }
+
+function abrirAyuda() {
+  document.getElementById("ayudaPopup")
+    .classList.remove("hidden");
+}
+
+function cerrarAyuda() {
+  document.getElementById("ayudaPopup")
+    .classList.add("hidden");
+}
   
+
+
 </script>
 
 </body>
