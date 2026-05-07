@@ -84,7 +84,12 @@ button {
 }
 
 .hidden { display:none; }
-.container { padding:20px; }
+.container {
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
 input {
   padding:12px;
@@ -158,7 +163,7 @@ input {
 }
 
 .footer {
-  margin-top: 40px;
+  margin-top: auto;
   padding: 15px;
   font-size: 14px;
   color: #aaa;
@@ -173,6 +178,9 @@ input {
     <h3 class="neon">Funcionamiento de la App</h3>
 
     <p>
+
+      <br><br>
+      
       • Los participantes eligen números de 3 cifras.<br><br>
 
       • Podés cargar números manualmente o mediante Excel.<br><br>
@@ -180,13 +188,10 @@ input {
       • El archivo Excel debe llamarse:
       <b>sorteo.xlsx</b><br><br>
 
-      • Los números deben estar en la columna A.<br><br>
-
-      • Ejemplos válidos:
-      001, 123, 045, 999<br><br>
+      • Los números deben estar en la columna A (Si por ej. el número es 001, podes poner 1.<br><br>
 
       • El sistema sortea:
-      centena, decena y unidad por separado.<br><br>
+      centena, decena y unidad por separado. Y adelanta posibles<br><br>
 
       • Si el número sorteado coincide con uno cargado:
       hay ganador.
@@ -207,6 +212,7 @@ input {
   <h2 class="neon">Todo no se puede</h2>
   <button onclick="irCarga()">Nuevo sorteo</button>
   <button onclick="abrirAyuda()">¿Cómo funciona?</button>
+  <br><br>
   <div class="banner">¡Subila Nacho!</div>
 </div>
 
@@ -228,7 +234,7 @@ input {
 
 <!-- SORTEO -->
 <div id="sorteo" class="container hidden">
-  <h2 class="neon">Sorteo en vivo</h2>
+  <h2 class="neon">La Quiniela Solidaria</h2>
 
   <div id="info"></div>
 
