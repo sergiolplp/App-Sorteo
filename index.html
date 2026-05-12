@@ -497,13 +497,24 @@ function checkGanador(){
 
 /* AGREGAR DESDE SORTEO */
 function agregarDesdeSorteo(){
-  let nuevo=prompt("Ingrese número de 3 cifras:");
+
+  // si ya salió la centena
+  if(resultado[0] !== "?"){
+    alert("No se pueden agregar números una vez sorteada la centena.");
+    return;
+  }
+
+  let nuevo = prompt("Ingrese número de 3 cifras:");
+
   if(!/^\d{3}$/.test(nuevo)){
     alert("Número inválido.");
     return;
   }
+
   if(numeros.includes(nuevo)) duplicados++;
+
   numeros.push(nuevo);
+
   actualizar();
 }
 
@@ -533,14 +544,15 @@ function abrirPopup() {
     `Total: ${numeros.length} | Duplicados: ${duplicados}`;
 
   // lista de números
-  numeros.forEach(n => {
+  [...numeros]
+  .sort((a, b) => Number(a) - Number(b))
+  .forEach(n => {
+
     const div = document.createElement("div");
     div.textContent = n;
     lista.appendChild(div);
-  });
 
-  popup.classList.remove("hidden");
-}
+});
 
 function cerrarPopup() {
   document.getElementById("popup").classList.add("hidden");
