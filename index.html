@@ -552,7 +552,10 @@ function abrirPopup() {
     div.textContent = n;
     lista.appendChild(div);
 
-});
+  });
+
+  popup.classList.remove("hidden");
+}
 
 function cerrarPopup() {
   document.getElementById("popup").classList.add("hidden");
