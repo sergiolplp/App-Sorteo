@@ -218,7 +218,7 @@ input {
 
 <!-- HOME -->
 <div id="home" class="container">
-  <h1 class="neon-pink">FM Cielo 105.5</h1>
+  <h1 class="neon-pink">FM Cielo 103.5</h1>
   <h2 class="neon">Todo no se puede</h2>
   <button onclick="irCarga()">Nuevo sorteo</button>
   <button onclick="abrirAyuda()">¿Cómo funciona?</button>
@@ -272,6 +272,13 @@ input {
   onclick="saleOSale()">
   Sale o sale
 </button>
+
+<button
+  id="cercaniaBtn"
+  class="hidden"
+  onclick="mostrarCercania()">
+  Ganador por cercanía
+</button>
   <div id="resultadoBox" class="resultado-box hidden">
   <h2 id="resultado"></h2>
 </div>
@@ -297,6 +304,24 @@ input {
     <button onclick="cerrarPopup()">Cerrar</button>
 
   </div>
+
+<div id="cercaniaPopup" class="popup hidden">
+
+  <div class="popup-content">
+
+    <h3 class="neon">
+      Ganador por cercanía
+    </h3>
+
+    <div id="cercaniaContenido"></div>
+
+    <button onclick="cerrarCercania()">
+      Cerrar
+    </button>
+
+  </div>
+
+</div>
     
 </div>
 
@@ -484,6 +509,8 @@ function checkGanador(){
   const res = document.getElementById("resultado");
   const saleBtn =
     document.getElementById("saleOSaleBtn");
+  const cercaniaBtn =
+  document.getElementById("cercaniaBtn");
 
   box.classList.remove(
     "hidden",
@@ -495,6 +522,7 @@ function checkGanador(){
 
     // ocultar Sale o sale
     saleBtn.classList.add("hidden");
+cercaniaBtn.classList.add("hidden");
 
     if(ganadores.length === 1){
       res.innerText = "🎉 Hay 1 ganador 🎉";
@@ -514,6 +542,7 @@ function checkGanador(){
 
     // mostrar Sale o sale
     saleBtn.classList.remove("hidden");
+cercaniaBtn.classList.remove("hidden");
   }
 }
 
@@ -589,8 +618,13 @@ function abrirAyuda() {
 }
 
 function cerrarAyuda() {
-  document.getElementById("ayudaPopup")
-    .classList.add("hidden");
+  document
+  .getElementById("saleOSaleBtn")
+  .classList.add("hidden");
+
+document
+  .getElementById("cercaniaBtn")
+  .classList.add("hidden");
 }
   
 
@@ -631,6 +665,76 @@ function saleOSale(){
     .classList.add("hidden");
 }
 
+function mostrarCercania(){
+
+  const numSorteado = Number(resultado.join(""));
+
+  // calcular distancia mínima
+  let distanciaMinima = Infinity;
+
+  numeros.forEach(n => {
+
+    const distancia =
+      Math.abs(Number(n) - numSorteado);
+
+    if(distancia < distanciaMinima){
+      distanciaMinima = distancia;
+    }
+  });
+
+  // obtener más cercanos
+  const cercanos = numeros.filter(n =>
+    Math.abs(Number(n) - numSorteado)
+    === distanciaMinima
+  );
+
+  // ordenar de menor a mayor
+  const ordenados = [...numeros]
+    .sort((a,b)=>Number(a)-Number(b));
+
+  // generar html
+  let html = `
+    <p>
+      Número sorteado:
+      <b>${resultado.join("")}</b>
+    </p>
+
+    <p>
+      Ganador${cercanos.length > 1 ? "es" : ""}
+      por cercanía:
+    </p>
+  `;
+
+  cercanos.forEach(n => {
+    html += `<div>${n}</div>`;
+  });
+
+  html += `
+    <hr>
+
+    <p><b>Números cargados</b></p>
+  `;
+
+  ordenados.forEach(n => {
+    html += `<div>${n}</div>`;
+  });
+
+  document
+    .getElementById("cercaniaContenido")
+    .innerHTML = html;
+
+  document
+    .getElementById("cercaniaPopup")
+    .classList.remove("hidden");
+}
+
+function cerrarCercania(){
+
+  document
+    .getElementById("cercaniaPopup")
+    .classList.add("hidden");
+}
+  
 </script>
 
 </body>
