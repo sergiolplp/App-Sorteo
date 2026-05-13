@@ -293,18 +293,25 @@ input {
 
 
   <div id="popup" class="popup hidden">
+
   <div class="popup-content">
-    
+
     <h3 class="neon">Números cargados</h3>
 
     <p id="popupStats"></p>
 
     <div id="listaNumeros" class="lista"></div>
 
-    <button onclick="cerrarPopup()">Cerrar</button>
+    <button onclick="cerrarPopup()">
+      Cerrar
+    </button>
 
   </div>
 
+</div>
+
+
+<!-- POPUP GANADOR POR CERCANIA -->
 <div id="cercaniaPopup" class="popup hidden">
 
   <div class="popup-content">
@@ -321,8 +328,6 @@ input {
 
   </div>
 
-</div>
-    
 </div>
 
   
@@ -618,13 +623,10 @@ function abrirAyuda() {
 }
 
 function cerrarAyuda() {
-  document
-  .getElementById("saleOSaleBtn")
-  .classList.add("hidden");
 
-document
-  .getElementById("cercaniaBtn")
-  .classList.add("hidden");
+  document
+    .getElementById("ayudaPopup")
+    .classList.add("hidden");
 }
   
 
@@ -663,6 +665,10 @@ function saleOSale(){
   document
     .getElementById("saleOSaleBtn")
     .classList.add("hidden");
+
+  document
+  .getElementById("cercaniaBtn")
+  .classList.add("hidden");
 }
 
 function mostrarCercania(){
