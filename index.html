@@ -265,6 +265,13 @@ input {
   <button id="b2" onclick="tirar(2)">Unidad</button>
 
   <p id="posibles"></p>
+
+<button
+  id="saleOSaleBtn"
+  class="hidden"
+  onclick="saleOSale()">
+  Sale o sale
+</button>
   <div id="resultadoBox" class="resultado-box hidden">
   <h2 id="resultado"></h2>
 </div>
@@ -469,20 +476,31 @@ function mostrarPosibles(pos){
 
 /* RESULTADO */
 function checkGanador(){
+
   let num = resultado.join("");
   let ganadores = numeros.filter(n => n === num);
 
   const box = document.getElementById("resultadoBox");
   const res = document.getElementById("resultado");
+  const saleBtn =
+    document.getElementById("saleOSaleBtn");
 
-  box.classList.remove("hidden", "ganador", "sin-ganador");
+  box.classList.remove(
+    "hidden",
+    "ganador",
+    "sin-ganador"
+  );
 
   if(ganadores.length > 0){
+
+    // ocultar Sale o sale
+    saleBtn.classList.add("hidden");
 
     if(ganadores.length === 1){
       res.innerText = "🎉 Hay 1 ganador 🎉";
     } else {
-      res.innerText = `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
+      res.innerText =
+        `🎉 Tenemos ${ganadores.length} ganadores 🎉`;
     }
 
     box.classList.add("ganador");
@@ -491,7 +509,11 @@ function checkGanador(){
   } else {
 
     res.innerText = "Hoy no hay premio";
+
     box.classList.add("sin-ganador");
+
+    // mostrar Sale o sale
+    saleBtn.classList.remove("hidden");
   }
 }
 
@@ -572,6 +594,42 @@ function cerrarAyuda() {
 }
   
 
+function saleOSale(){
+
+  // resetear resultado
+  resultado = ["?","?","?"];
+
+  // volver slots a ?
+  document.getElementById("s0").textContent = "?";
+  document.getElementById("s1").textContent = "?";
+  document.getElementById("s2").textContent = "?";
+
+  // reactivar botones
+  document.getElementById("b0").disabled = false;
+  document.getElementById("b1").disabled = false;
+  document.getElementById("b2").disabled = false;
+
+  // limpiar posibles
+  document.getElementById("posibles").innerText = "";
+
+  // ocultar resultado
+  const box =
+    document.getElementById("resultadoBox");
+
+  box.classList.add("hidden");
+  box.classList.remove(
+    "ganador",
+    "sin-ganador"
+  );
+
+  // sacar efecto ganador
+  document.body.classList.remove("win");
+
+  // ocultar botón otra vez
+  document
+    .getElementById("saleOSaleBtn")
+    .classList.add("hidden");
+}
 
 </script>
 
