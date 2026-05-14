@@ -192,22 +192,32 @@ input {
 
     <p>
 
-      <br><br>
-      
-      • Los participantes eligen números de 3 cifras.<br><br>
+• Los participantes juegan con números de 3 cifras.<br><br>
 
-      • Podés cargar números manualmente o mediante Excel.<br><br>
+• Los números pueden cargarse manualmente o importarse desde un archivo <br><br>
+  El archivo debe llamarse <b>sorteo.xlsx</b> <br><br>
+  Los números deben estar ubicados en la columna A del Excel (Si por ej. el número es 001, podes poner 1).<br><br>
 
-      • El archivo Excel debe llamarse:
-      <b>sorteo.xlsx</b><br><br>
+• El sistema acepta números del 000 al 999.<br><br>
 
-      • Los números deben estar en la columna A (Si por ej. el número es 001, podes poner 1).<br><br>
+• Durante el sorteo se extraen:
+centena, decena y unidad por separado.<br><br>
 
-      • El sistema sortea:
-      centena, decena y unidad por separado. Y adelanta posibles<br><br>
+• A medida que salen los números, la app muestra las posibles combinaciones restantes.<br><br>
 
-      • Si el número sorteado coincide con uno cargado:
-      hay ganador.
+• Si el número sorteado coincide con uno cargado:
+hay uno o varios ganadores.<br><br>
+
+• Si no hay coincidencias, se habilita la opción
+<b>“Sale o sale”</b> para realizar un nuevo intento.<br><br>
+
+• También, si no hay coincidencias, puede utilizarse la función
+<b>“Ganador por cercanía”</b>,
+que selecciona el número más cercano al resultado sorteado.<br><br>
+
+• La app permite ver todos los números cargados,
+la cantidad total de participantes y los duplicados detectados.<br><br>
+
     </p>
 
     <button onclick="cerrarAyuda()">Cerrar</button>
