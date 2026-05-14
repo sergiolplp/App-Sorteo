@@ -12,6 +12,7 @@
 <meta name="theme-color" content="#00eaff">
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <style>
 body {
@@ -246,11 +247,22 @@ la cantidad total de participantes y los duplicados detectados.<br><br>
 </footer>
 </div>
 
-<!-- CARGA -->
+<!-- CARGA --función
 <div id="carga" class="container hidden">
   <h2 class="neon">Carga de participantes</h2>
 
   <input type="file" id="fileInput"><br><br>
+
+  <button id="btnWhatsapp">
+  Importar WhatsApp
+</button>
+
+<input
+  type="file"
+  id="archivoWhatsapp"
+  accept=".txt,.zip"
+  style="display:none;"
+>
 
   <input id="numeroInput" maxlength="3" placeholder="000">
   <button id="btnAgregar" onclick="agregarNumero()">Agregar</button>
@@ -374,6 +386,17 @@ btn.onclick = () => {
 };
 
 /* NAV */
+
+document
+  .getElementById("btnWhatsapp")
+  .addEventListener("click", () => {
+
+    document
+      .getElementById("archivoWhatsapp")
+      .click();
+
+});
+  
 function irCarga(){
   home.classList.add("hidden");
   carga.classList.remove("hidden");
@@ -423,6 +446,10 @@ function agregarNumero(){
   actualizar();
 }
 
+document
+  .getElementById("archivoWhatsapp")
+  .addEventListener("change", manejarArchivoWhatsapp);
+  
 /* EXCEL VALIDACION FUERTE */
 fileInput.addEventListener("change",e=>{
   let f = e.target.files[0];
@@ -469,6 +496,119 @@ if(!/^\d{3}$/.test(val)){
   reader.readAsArrayBuffer(f);
 });
 
+async function manejarArchivoWhatsapp(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const extension = file.name
+    .split(".")
+    .pop()
+    .toLowerCase();
+
+  let texto = "";
+
+  // TXT
+  if (extension === "txt") {
+
+    texto = await file.text();
+
+  }
+
+  // ZIP
+  else if (extension === "zip") {
+
+    const zip = await JSZip.loadAsync(file);
+
+    const txtFile = Object.keys(zip.files)
+      .find(nombre => nombre.endsWith(".txt"));
+
+    if (!txtFile) {
+
+      alert("No se encontró archivo TXT dentro del ZIP");
+      return;
+
+    }
+
+    texto = await zip
+      .files[txtFile]
+      .async("string");
+
+  }
+
+  else {
+
+    alert("Formato no compatible");
+    return;
+
+  }
+
+  procesarChatWhatsapp(texto);
+
+}
+
+function procesarChatWhatsapp(texto) {
+
+  const lineas = texto.split("\n");
+
+  const hoy = new Date();
+
+  const diaHoy = hoy.getDate();
+  const mesHoy = hoy.getMonth() + 1;
+  const añoHoy = hoy.getFullYear() % 100;
+
+  const numerosValidos = [];
+
+  lineas.forEach(linea => {
+
+    // Ejemplo:
+    // 14/05/26, 10:22 - Juan: 123
+
+    const match = linea.match(
+      /^(\d{1,2})\/(\d{1,2})\/(\d{2}),.*?:\s(.+)$/
+    );
+
+    if (!match) return;
+
+    const dia = parseInt(match[1]);
+    const mes = parseInt(match[2]);
+    const año = parseInt(match[3]);
+
+    const mensaje = match[4].trim();
+
+    // Validar fecha de hoy
+    if (
+      dia !== diaHoy ||
+      mes !== mesHoy ||
+      año !== añoHoy
+    ) {
+      return;
+    }
+
+    // Validar exactamente 3 dígitos
+    if (/^\d{3}$/.test(mensaje)) {
+
+      if(numeros.includes(mensaje)) {
+        duplicados++;
+      }
+
+      numeros.push(mensaje);
+
+      numerosValidos.push(mensaje);
+
+    }
+
+  });
+
+  actualizar();
+
+  alert(
+    `${numerosValidos.length} números encontrados`
+  );
+
+}
+  
 /* STATS */
 function actualizar(){
   contador.innerText=`${numeros.length} / 999 cargados`;
