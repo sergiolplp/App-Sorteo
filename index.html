@@ -562,11 +562,16 @@ function procesarChatWhatsapp(texto) {
 
   lineas.forEach(linea => {
 
-    // Ejemplo:
-    // 14/05/26, 10:22 - Juan: 123
+    // limpiar caracteres invisibles
+    linea = linea.replace(/\u200e/g, "").trim();
+
+    /*
+      Formato real WhatsApp:
+      [14/5/26, 11:28:53 a. m.] Nombre: 375
+    */
 
     const match = linea.match(
-      /^(\d{1,2})\/(\d{1,2})\/(\d{2}),.*?:\s(.+)$/
+      /^\[(\d{1,2})\/(\d{1,2})\/(\d{2}),.*?\]\s.*?:\s(.+)$/
     );
 
     if (!match) return;
@@ -577,7 +582,7 @@ function procesarChatWhatsapp(texto) {
 
     const mensaje = match[4].trim();
 
-    // Validar fecha de hoy
+    // validar fecha actual
     if (
       dia !== diaHoy ||
       mes !== mesHoy ||
@@ -586,10 +591,10 @@ function procesarChatWhatsapp(texto) {
       return;
     }
 
-    // Validar exactamente 3 dígitos
+    // SOLO mensajes de exactamente 3 dígitos
     if (/^\d{3}$/.test(mensaje)) {
 
-      if(numeros.includes(mensaje)) {
+      if (numeros.includes(mensaje)) {
         duplicados++;
       }
 
