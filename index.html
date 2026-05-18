@@ -33,15 +33,117 @@ body {
    font-size: 30px;
 }
 
-/* BOTONES */
+/* BOTONES RADIO */
+
 button {
-  padding: 12px;
-  margin: 6px;
-  border: none;
-  border-radius: 10px;
-  background: #00eaff;
-  color: #ff00c8;
+
+  position: relative;
+
+  padding: 14px 22px;
+  margin: 8px;
+
+  border-radius: 14px;
+  border: 2px solid #00eaff;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1a1a1a 0%,
+      #0b0b0b 100%
+    );
+
+  color: #ffffff;
+
   font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 1px;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 10px rgba(0,234,255,.5),
+    inset 0 0 10px rgba(255,255,255,.05);
+
+  transition:
+    transform .15s,
+    box-shadow .2s,
+    border-color .2s;
+
+  overflow: hidden;
+}
+
+/* LED superior */
+
+button::before {
+
+  content: "";
+
+  position: absolute;
+
+  top: 6px;
+  left: 8px;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #ff00c8;
+
+  box-shadow:
+    0 0 5px #ff00c8,
+    0 0 10px #ff00c8;
+
+}
+
+/* Hover */
+
+button:hover {
+
+  transform: translateY(-2px);
+
+  border-color: #ff00c8;
+
+  box-shadow:
+    0 0 15px #00eaff,
+    0 0 25px rgba(255,0,200,.5);
+
+}
+
+/* Click */
+
+button:active {
+
+  transform: scale(.96);
+
+}
+
+/* Disabled */
+
+button:disabled {
+
+  opacity: .4;
+  cursor: not-allowed;
+
+  filter: grayscale(1);
+
+}
+
+/* BOTONES IMPORTANTES */
+
+#saleOSaleBtn,
+#btnAgregar,
+#b0,
+#b1,
+#b2 {
+
+  background:
+    linear-gradient(
+      180deg,
+      #2a0033 0%,
+      #120015 100%
+    );
+
 }
 
 /* BANNER */
@@ -290,9 +392,9 @@ la cantidad total de participantes y los duplicados detectados.<br><br>
     <div class="slot" id="s2">?</div>
   </div>
 
-  <button id="b0" onclick="tirar(0)">Centena</button>
-  <button id="b1" onclick="tirar(1)">Decena</button>
-  <button id="b2" onclick="tirar(2)">Unidad</button>
+  <button id="b0" onclick="tirar(0)">🎚️Centena</button>
+  <button id="b1" onclick="tirar(1)">🎚️Decena</button>
+  <button id="b2" onclick="tirar(2)">🎚️Unidad</button>
 
   <p id="posibles"></p>
 
